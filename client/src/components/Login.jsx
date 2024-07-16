@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/auth/AuthContext';
 
@@ -8,7 +8,11 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -27,6 +31,7 @@ const Login = () => {
           placeholder="Username"
           value={formData.username}
           onChange={handleChange}
+          required
         />
       </div>
       <div className="mb-4">
@@ -37,6 +42,7 @@ const Login = () => {
           placeholder="Email"
           value={formData.email}
           onChange={handleChange}
+          required
         />
       </div>
       <button
@@ -46,7 +52,7 @@ const Login = () => {
         Login
       </button>
     </form>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
