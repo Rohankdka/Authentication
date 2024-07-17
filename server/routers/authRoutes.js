@@ -1,6 +1,7 @@
 import express from 'express'
 
-import { create, del, loginUser, read, registerUser, update } from '../controllers/authController.js'
+import { loginUser, registerUser} from '../controllers/authController.js'
+import { create,read,update,del } from '../controllers/blogController.js'
 
 
 const authRoutes = express.Router()
