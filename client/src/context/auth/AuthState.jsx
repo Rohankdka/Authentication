@@ -1,3 +1,4 @@
+// authState.jsx
 import { useEffect, useState } from "react";
 import AuthContext from "./AuthContext";
 
@@ -9,7 +10,8 @@ const AuthState = (props) => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    if (storedUser && storedUser !== 'undefined') {
+    const token = localStorage.getItem('token'); // Retrieve token from local storage
+    if (storedUser && storedUser !== 'undefined' && token) {
       setUser(JSON.parse(storedUser));
     }
   }, []);
@@ -25,6 +27,7 @@ const AuthState = (props) => {
       email: ''
     });
     localStorage.removeItem('user');
+    localStorage.removeItem('token'); // Remove token from local storage
   };
 
   return (
