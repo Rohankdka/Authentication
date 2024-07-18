@@ -2,12 +2,16 @@ import db from "../db.js";
 
 
 export const create = (req,res)=>{
-    const sql = "insert into card(`title`,`description`) values (?,?)";
+
     const value = req.body
-    db.query(sql,[value.title,value.description],(err,result)=>{
-        if (err) return res.status(500).send(err)
-            return res.status(200).send({message:"value created",result})
-    })
+
+    
+        const sql = "insert into card(`user_id`,`title`,`description`) values (?,?,?)";
+       
+        db.query(sql,[user_id,value.title,value.description],(err,result)=>{
+            if (err) return res.status(500).send(err)
+                return res.status(200).send({message:"value created",result})
+        })
 }
 
 export const read = (req,res)=>{
@@ -30,6 +34,8 @@ export const update = (req, res) => {
 
 export const del = (req, res) => {
     const { id } = req.params; 
+
+
     const sql = "DELETE FROM card WHERE id = ?";
 
     db.query(sql,[id], (err, result) => {

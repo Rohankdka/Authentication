@@ -33,6 +33,9 @@ export const loginUser = (req, res) => {
 
         const token = generateToken(user.email);
 
+        // Set token as a cookie
+        res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'strict', maxAge: 3600000 }); // Cookie options for security
+
         res.status(200).send({ message: "Login successful", token, user });
     });
 };
