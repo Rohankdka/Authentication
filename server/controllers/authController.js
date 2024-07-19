@@ -1,13 +1,14 @@
 import db from "../db.js";
 import bcrypt from 'bcrypt';
-import jwt from "jsonwebtoken"
+import jwt from 'jsonwebtoken';
 
-// Helper function to generate JWT
-const generateToken = (email) => {
-    return jwt.sign({ email }, 'secret_key', { expiresIn: '1h' });
+
+// Function to generate JWT token
+const generateToken = (user) => {
+    return jwt.sign({ id: user.id, email: user.email }, 'secret_key', { expiresIn: '1h' });
 };
 
-// Login User Function
+// Login function
 export const loginUser = (req, res) => {
     const { email, password } = req.body;
 
@@ -31,14 +32,21 @@ export const loginUser = (req, res) => {
             return res.status(401).send({ message: "Invalid email or password" });
         }
 
-        const token = generateToken(user.email);
+        const token = generateToken(user);
 
         // Set token as a cookie
-        res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'strict', maxAge: 3600000 }); // Cookie options for security
+        res.cookie('token', token, {
+            httpOnly: true,
+            // secure: true,  // Ensure you are testing on HTTPS
+            // sameSite: 'strict',
+            maxAge: 3600000 // 1 hour
+        });
 
         res.status(200).send({ message: "Login successful", token, user });
     });
 };
+
+
 // Register User Function
 export const registerUser = async (req, res) => {
     const { username, email, password } = req.body;

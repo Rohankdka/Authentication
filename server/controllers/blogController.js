@@ -1,18 +1,17 @@
 import db from "../db.js";
 
+export const create = (req, res) => {
+    const { title, description } = req.body;
+    const user_id = req.user.id;
 
-export const create = (req,res)=>{
+    const sql = "INSERT INTO card (`user_id`, `title`, `description`) VALUES (?, ?, ?)";
 
-    const value = req.body
+    db.query(sql, [user_id, title, description], (err, result) => {
+        if (err) return res.status(500).send(err);
+        return res.status(200).send({ message: "Value created", result });
+    });
+};
 
-    
-        const sql = "insert into card(`user_id`,`title`,`description`) values (?,?,?)";
-       
-        db.query(sql,[user_id,value.title,value.description],(err,result)=>{
-            if (err) return res.status(500).send(err)
-                return res.status(200).send({message:"value created",result})
-        })
-}
 
 export const read = (req,res)=>{
     const sql = "select*from card";

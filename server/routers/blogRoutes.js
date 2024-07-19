@@ -4,9 +4,9 @@ import { authToken } from '../controllers/authToken.js'
 
 const blogRoutes = express.Router()
 
-blogRoutes.post("/",authToken,create)
-blogRoutes.get("/",read)
-blogRoutes.put("/",update)
-blogRoutes.delete("/:id",del)
+blogRoutes.post("/blog",authToken,create)
+blogRoutes.get("/blog",read)
+blogRoutes.put("/blog",update)
+blogRoutes.delete("/blog/:id",del)
 
 export default blogRoutes
