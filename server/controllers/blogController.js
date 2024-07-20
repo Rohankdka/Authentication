@@ -34,11 +34,17 @@ export const update = (req, res) => {
 export const del = (req, res) => {
     const { id } = req.params; 
 
+    const userid = req.user.id;
 
-    const sql = "DELETE FROM card WHERE id = ?";
 
-    db.query(sql,[id], (err, result) => {
+    const sql = "DELETE FROM card WHERE id = ? and user_id=?";
+
+    db.query(sql,[id,userid], (err, result) => {
         if (err) return res.status(500).send(err);
+
+        if (result.affectedRows===0){
+            return res.status(400).send({message:"blog post not found or user not authorized"})
+        }
         return res.status(200).send({ message: "deleted...", result });
     });
 }
