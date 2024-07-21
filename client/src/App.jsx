@@ -6,6 +6,7 @@ import Home from '../src/components/Home'
 import Navbar from './components/Navbar'
 import Login from './components/Login'
 import RegistrationForm from './components/RegistrationForm'
+import Blog from './components/Blog'
 
 
 const App = () => {
@@ -18,6 +19,7 @@ const App = () => {
             <Route path='/' element={<Home />} />
             <Route path='/login' element={<Login/>}/>
             <Route path='/register' element={<RegistrationForm/>}/>
+            <Route path='/blog' element={<Blog/>}/>
           </Routes>
         </BrowserRouter>
       </AuthState>
