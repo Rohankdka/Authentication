@@ -1,12 +1,13 @@
 import express from 'express'
-import { create,read,update,del } from '../controllers/blogController.js'
+import { create,read,update,del, re } from '../controllers/blogController.js'
 import { authToken } from '../controllers/authToken.js'
 
 const blogRoutes = express.Router()
 
-blogRoutes.post("/blog",authToken,create)
-blogRoutes.get("/blog",read)
-blogRoutes.put("/blog",update)
-blogRoutes.delete("/blog/:id",authToken,del)
+blogRoutes.post("/",authToken,create)
+blogRoutes.get("/",read)
+blogRoutes.put("/:id",authToken,update)
+blogRoutes.delete("/:id",authToken,del)
+blogRoutes.get('/read',authToken,re)
 
 export default blogRoutes

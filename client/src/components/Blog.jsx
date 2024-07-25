@@ -1,133 +1,110 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import './Blog.css'
+import axios from 'axios';
 
 const Blog = () => {
-  const [isFormVisible, setIsFormVisible] = useState(false);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [photo, setPhoto] = useState(null);
-  const [blogPost, setBlogPost] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [formVisible, setFormVisible] = useState(false);
+  const [addVisible, setAddVisible] = useState(false);
+  const [data, setData] = useState([]);
+  const [flag, setFlag] = useState(0);
+  const [formData, setFormData] = useState({
+    id: '',
+    title: '',
+    description: ''
+  });
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    axios.get("http://localhost:5000/read",{withCredentials:true})
+      .then((res) => {
+        setData(res.data.result);
+      }).catch((err) => {
+        console.log(err);
+      });
+  }, [flag]);
 
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const newBlogPost = {
-        title,
-        description,
-        photo: e.target.result,
-      };
-
-      setBlogPost(newBlogPost);
-      setTitle('');
-      setDescription('');
-      setPhoto(null);
-    };
-
-    if (photo) {
-      reader.readAsDataURL(photo);
-    } else {
-      setBlogPost({ title, description, photo: null });
+  const handleDelete = (id) => {
+    if (window.confirm("Are You Sure?")) {
+      axios.delete(`http://localhost:5000/${id}`,{withCredentials:true})
+        .then((res) => {
+          setFlag(flag + 1);
+          console.log(res);
+        }).catch((err) => {
+          console.log(err);
+        });
     }
-
-    setIsFormVisible(false);
-    setIsEditing(false);
   };
 
-  const handleEditClick = () => {
-    setIsFormVisible(true);
-    setIsEditing(true);
-    setTitle(blogPost.title);
-    setDescription(blogPost.description);
-    setPhoto(null);
+  const handleEdit = (card) => {
+    setFormData(card);
+    setFormVisible(true); 
   };
 
-  const handleDeleteClick = () => {
-    setBlogPost(null);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios.put(`http://localhost:5000/${formData.id}`, formData,{withCredentials:true}) // Ensure /:id is the correct endpoint
+      .then((res) => {
+        setFlag(flag + 1);
+        setFormVisible(false);
+        console.log(res.data.message);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
-    <div className="container mx-auto p-6 bg-gray-100 min-h-screen">
-      <button
-        onClick={() => setIsFormVisible(!isFormVisible)}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
-      >
-        {isEditing ? 'Edit Blog' : 'Create Blog'}
-      </button>
-
-      {isFormVisible && (
-        <div className="mt-6">
-          <form onSubmit={handleFormSubmit} className="bg-white p-6 rounded shadow-md">
-            <div className="mb-4">
-              <label htmlFor="title" className="block text-gray-700">
-                Title
-              </label>
-              <input
-                type="text"
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="mt-1 block w-full border-gray-300 rounded"
-                required
-              />
+    <div className='container'>
+      <h1>POSTS</h1>
+      <button className='add' onClick={() => setAddVisible(true)}>Add</button>
+      <div className='card-item'>
+        {data.map((value) => (
+          <div className="card" key={value.id}>
+            <h1>{value.title}</h1>
+            <p>{value.description}</p>
+            <div className="btn">
+              <button onClick={() => handleDelete(value.id)}>Delete</button>
+              <button onClick={() => handleEdit(value)}>Edit</button>
             </div>
-            <div className="mb-4">
-              <label htmlFor="photo" className="block text-gray-700">
-                Upload Photo
-              </label>
-              <input
-                type="file"
-                id="photo"
-                onChange={(e) => setPhoto(e.target.files[0])}
-                className="mt-1 block w-full border-gray-300 rounded"
-              />
+          </div>
+        ))}
+      </div>
+      {formVisible && (
+        <div className='edit-form'>
+          <form onSubmit={handleSubmit}>
+            <label htmlFor='title'>Title: </label>
+            <input type='text' name='title' value={formData.title} onChange={handleChange} />
+            <label htmlFor='desc'>Desc: </label>
+            <textarea name='description' value={formData.description} onChange={handleChange}></textarea>
+            <div className='form-buttons'>
+              <button type='button' onClick={() => setFormVisible(false)}>Cancel</button>
+              <button>Edit</button>
             </div>
-            <div className="mb-4">
-              <label htmlFor="description" className="block text-gray-700">
-                Description
-              </label>
-              <textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="mt-1 block w-full border-gray-300 rounded"
-                rows="4"
-                required
-              ></textarea>
-            </div>
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">
-              Submit
-            </button>
           </form>
         </div>
       )}
-
-      {blogPost && (
-        <div className="mt-6 bg-white p-6 rounded shadow-md">
-          <h2 className="text-2xl font-bold mb-4">{blogPost.title}</h2>
-          {blogPost.photo && (
-            <img src={blogPost.photo} alt="Blog Post" className="w-full h-auto mb-4 rounded" />
-          )}
-          <p className="text-gray-700">{blogPost.description}</p>
-          <div className="mt-4 flex space-x-4">
-            <button
-              onClick={handleEditClick}
-              className="bg-yellow-500 text-white px-4 py-2 rounded"
-            >
-              Edit
-            </button>
-            <button
-              onClick={handleDeleteClick}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              Delete
-            </button>
-          </div>
+      {addVisible && (
+        <div className='add-form'>
+          <form action='http://localhost:5000/' encType='true' method='POST'>
+            <label htmlFor='title'>Title: </label>
+            <input type='text' name='title' />
+            <label htmlFor='desc'>Desc: </label>
+            <textarea name='description'></textarea>
+            <div className='form-buttons'>
+              <button type='button' onClick={() => setAddVisible(false)}>Cancel</button>
+              <button type='submit'>Add</button>
+            </div>
+          </form>
         </div>
       )}
     </div>
   );
 };
-
-export default Blog;
+export default Blog

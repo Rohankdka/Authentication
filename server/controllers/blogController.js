@@ -22,14 +22,23 @@ export const read = (req,res)=>{
 }
 
 export const update = (req, res) => {
-    const sql = "UPDATE card SET title=?, description=? WHERE id=?";
-    const value = req.body;
-    console.log(value);
-    db.query(sql,[value.title,value.description,value.id],(error,result)=>{
-        if(error) return res.status(500).json({message:error.message})
-        return res.status(200).json({message:"Successfully updated",result})
-    })
-}
+    const {id} = req.params;
+    const { title, description } = req.body;
+    const userid = req.user.id;
+
+    const sql = "UPDATE card SET title=?, description=? WHERE id=? AND user_id=?";
+    db.query(sql, [title, description, id, userid], (error, result) => {
+        if (error) {
+            return res.status(500).json({ message: error.message });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(400).json({ message: "Blog post not found or user not authorized" });
+        }
+
+        return res.status(200).json({ message: "Successfully updated", result });
+    });
+};
 
 export const del = (req, res) => {
     const { id } = req.params; 
@@ -48,3 +57,15 @@ export const del = (req, res) => {
         return res.status(200).send({ message: "deleted...", result });
     });
 }
+
+
+export const re = (req, res) => {
+    const userId = req.user.id;
+  
+    const sql = "SELECT * FROM card WHERE user_id = ?";
+    db.query(sql, [userId], (err, result) => {
+        if (err) return res.status(500).send(err);
+        if (result.length === 0) return res.status(404).send({ message: "No records found for this user" });
+        return res.status(200).send({ message: "Value read", result });
+    });
+};
