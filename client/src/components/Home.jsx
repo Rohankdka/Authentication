@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import AuthContext from '../context/auth/AuthContext';
+import './Home.css';
 
 const Home = () => {
   const { user } = useContext(AuthContext);
@@ -17,21 +18,22 @@ const Home = () => {
   }, [flag]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="home-container">
       {user.username ? (
         <>
-          <h1 className="text-2xl font-bold">Welcome, {user.username}!</h1>
-          <div className="mt-6">
+          <h1 className="welcome-message">Welcome, {user.username}!</h1>
+          <div className="post-list">
             {data.map((item) => (
-              <div key={item.id} className="bg-white p-4 rounded-lg shadow-md mb-4 w-96">
-                <h2 className="text-xl font-semibold">{item.title}</h2>
-                <p className="mt-2">{item.description}</p>
+              <div key={item.id} className="post-card">
+                {item.photo && <img src={`http://localhost:5000${item.photo}`} alt={item.title} className="post-image" />}
+                <h2 className="post-title">{item.title}</h2>
+                <p className="post-description">{item.description}</p>
               </div>
             ))}
           </div>
         </>
       ) : (
-        <h1 className="text-2xl font-bold">Welcome to our website!</h1>
+        <h1 className="welcome-message">Welcome to our website!</h1>
       )}
     </div>
   );

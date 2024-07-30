@@ -3,6 +3,11 @@ import { Link } from 'react-router-dom';
 import AuthContext from '../context/auth/AuthContext';
 
 const Navbar = () => {
+
+  const handlelogout =()=>{
+    logout();
+    Navigate('/')
+  }
   const { user, logout } = useContext(AuthContext);
 
   return (
@@ -26,7 +31,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-1">
             {user.username ? (
               <>
-                <button onClick={logout} className="py-2 px-2 font-medium text-gray-500 rounded hover:bg-red-500 hover:text-white transition duration-300">Log Out</button>
+                <button onClick={handlelogout} className="py-2 px-2 font-medium text-gray-500 rounded hover:bg-red-500 hover:text-white transition duration-300">Log Out</button>
               </>
             ) : (
               <>
